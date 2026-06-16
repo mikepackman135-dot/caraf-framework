@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CARAF — Carrier Brief 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:   #08090B;
+    --ink:     #111318;
+    --rule:    #1E2128;
+    --muted:   #4A4F5E;
+    --body:    #8A909F;
+    --white:   #EEF0F5;
+    --signal:  #E8FF47;
+    --alert:   #FF4747;
+  }
+
+  html, body {
+    width: 100%;
+    background: var(--black);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: var(--body);
+  }
+
+  /* ── SCREEN WRAPPER ── */
+  .screen-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+    gap: 16px;
+  }
+
+  .screen-instructions {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .screen-instructions strong {
+    color: var(--signal);
+  }
+
+  .print-btn {
+    background: var(--signal);
+    color: var(--black);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .print-btn:hover { opacity: 0.85; }
+
+  /* ── PAGE SHELL ── */
+  .page {
+    width: 850px;
+    min-height: 1100px;
+    background: var(--ink);
+    border: 1px solid var(--rule);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  }
+
+  /* ── HEADER BAR ── */
+  .page-header {
+    background: var(--black);
+    border-bottom: 1px solid var(--rule);
+    padding: 28px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--white);
+    letter-spacing: 0.1em;
+  }
+  .header-logo span { color: var(--signal); }
+
+  .header-meta {
+    text-align: right;
+  }
+  .header-meta-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .header-meta-value {
+    font-size: 0.75rem;
+    color: var(--body);
+  }
+
+  /* ── SIGNAL STRIP ── */
+  .signal-strip {
+    background: var(--signal);
+    padding: 10px 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .signal-strip-dot {
+    width: 6px; height: 6px;
+    background: var(--black);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .signal-strip p {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--black);
+  }
+
+  /* ── BODY GRID ── */
+  .page-body {
+    padding: 40px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px 48px;
+    align-content: start;
+  }
+
+  /* ── HEADLINE BLOCK (full width) ── */
+  .headline-block {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 32px;
+    margin-bottom: 4px;
+  }
+  .headline-eyebrow {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--signal);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .headline-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 1.5px;
+    background: var(--signal);
+  }
+  .headline-block h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.1rem;
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 680px;
+    margin-bottom: 16px;
+  }
+  .headline-block h1 em {
+    font-style: normal;
+    color: var(--signal);
+  }
+  .headline-block .deck {
+    font-size: 0.88rem;
+    color: var(--body);
+    line-height: 1.75;
+    max-width: 640px;
+  }
+
+  /* ── COLUMN SECTIONS ── */
+  .col-section { display: flex; flex-direction: column; gap: 0; }
+
+  .col-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--signal);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .col-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--white);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .col-section p {
+    font-size: 0.8rem;
+    color: var(--body);
+    line-height: 1.75;
+    margin-bottom: 14px;
+  }
+  .col-section p:last-child { margin-bottom: 0; }
+
+  /* ── QUOTE BLOCK ── */
+  .quote-block {
+    grid-column: 1 / -1;
+    background: rgba(232,255,71,0.06);
+    border-left: 3px solid var(--signal);
+    padding: 20px 24px;
+    margin: 4px 0;
+  }
+  .quote-block blockquote {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--white);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .quote-block blockquote em {
+    font-style: normal;
+    color: var(--signal);
+  }
+  .quote-block cite {
+    font-size: 0.68rem;
+    color: var(--muted);
+    font-style: normal;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── CASE BOX ── */
+  .case-box {
+    background: var(--black);
+    border: 1px solid var(--rule);
+    padding: 20px 22px;
+  }
+  .case-box-title {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .case-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.72rem;
+  }
+  .case-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .case-key { color: var(--muted); }
+  .case-val { color: var(--white); font-weight: 500; text-align: right; max-width: 180px; }
+  .case-val.alert { color: var(--alert); }
+
+  /* ── TIERS ── */
+  .tiers { display: flex; flex-direction: column; gap: 8px; }
+  .tier {
+    background: var(--black);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--signal);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .tier-left h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--white);
+    margin-bottom: 3px;
+  }
+  .tier-left p {
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+  .tier-price {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.78rem;
+    color: var(--signal);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--rule);
+    margin: 4px 0;
+  }
+  .stat-cell {
+    padding: 16px 20px;
+    border-right: 1px solid var(--rule);
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--signal);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-lbl {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ── CREDENTIALS ── */
+  .cred-block {
+    background: var(--black);
+    border: 1px solid var(--rule);
+    padding: 18px 20px;
+  }
+  .cred-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--white);
+    margin-bottom: 2px;
+  }
+  .cred-title-line {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--signal);
+    margin-bottom: 10px;
+  }
+  .cred-lines { display: flex; flex-direction: column; gap: 5px; }
+  .cred-line {
+    font-size: 0.72rem;
+    color: var(--body);
+    line-height: 1.5;
+    padding-left: 10px;
+    border-left: 1px solid var(--rule);
+  }
+
+  /* ── PAGE FOOTER ── */
+  .page-footer {
+    background: var(--black);
+    border-top: 1px solid var(--rule);
+    padding: 18px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-contact {
+    font-size: 0.7rem;
+    color: var(--body);
+  }
+  .footer-contact strong {
+    color: var(--white);
+    font-weight: 600;
+  }
+  .footer-contact a {
+    color: var(--signal);
+    text-decoration: none;
+  }
+  .footer-disclaimer {
+    font-size: 0.62rem;
+    color: var(--muted);
+    max-width: 340px;
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    @page {
+      size: letter landscape;
+      margin: 0;
+    }
+    html, body {
+      background: #08090B !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .screen-wrapper {
+      padding: 0;
+      gap: 0;
+    }
+    .screen-instructions,
+    .print-btn { display: none; }
+    .page {
+      width: 100vw;
+      min-height: 100vh;
+      box-shadow: none;
+      border: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="screen-wrapper">
+
+  <p class="screen-instructions">
+    To save as PDF — press <strong>Ctrl+P</strong> (Windows) or <strong>Cmd+P</strong> (Mac) → Set destination to "Save as PDF" → Layout: <strong>Landscape</strong>
+  </p>
+  <button class="print-btn" onclick="window.print()">⬇ Save as PDF</button>
+
+  <!-- THE PAGE -->
+  <div class="page">
+
+    <!-- HEADER -->
+    <div>
+      <div class="page-header">
+        <div class="header-logo">CARA<span>F</span> &nbsp;·&nbsp; <span style="color:var(--body); font-family:'Inter',sans-serif; font-weight:400; font-size:0.75rem; letter-spacing:0.04em;">Clinical AI Reasoning & Accountability Framework</span></div>
+        <div class="header-meta">
+          <div class="header-meta-label">Carrier Brief</div>
+          <div class="header-meta-value">Confidential · June 2026 · V1.0</div>
+        </div>
+      </div>
+      <div class="signal-strip">
+        <div class="signal-strip-dot"></div>
+        <p>The first AI malpractice verdict will be won or lost on documentation that doesn't exist yet</p>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="page-body">
+
+      <!-- HEADLINE -->
+      <div class="headline-block">
+        <div class="headline-eyebrow">The Exposure No One Has Priced</div>
+        <h1>Clinical AI is inside your<br>insured accounts. <em>Now what?</em></h1>
+        <p class="deck">
+          MPL carriers are renewing physician accounts where clinical AI is actively influencing diagnosis, treatment, and documentation — with no forensic standard, no coverage clarity, and no mechanism to evaluate liability at intake. CARAF closes that gap before a verdict prices it for you.
+        </p>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-cell">
+          <div class="stat-num">4</div>
+          <div class="stat-lbl">Policy types with unpriced AI exposure gaps (MPL, Cyber, CGL, Tech E&O)</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">0</div>
+          <div class="stat-lbl">Existing documentation standards for AI-assisted clinical encounters</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">8</div>
+          <div class="stat-lbl">Defendants in Clifford v. Prenuvo — the anchor AI malpractice case on docket now</div>
+        </div>
+      </div>
+
+      <!-- THE GAP -->
+      <div class="col-section">
+        <div class="col-label">The Documentation Gap</div>
+        <h2>The Cosigner Problem</h2>
+        <p>
+          The medical record can prove the AI spoke. EHR metadata, audit logs, and API call records establish that a tool generated output during a patient encounter. What they cannot prove is whether the physician engaged — read it, questioned it, applied independent judgment, or deferred to it without thinking.
+        </p>
+        <p>
+          In a malpractice case, that silence belongs to the plaintiff. If the defense cannot demonstrate the physician was the decision-maker, the narrative is written: the AI made the call, the doctor signed off, the patient was harmed.
+        </p>
+        <p>
+          That is a losing defense. And right now, most accounts in your book are building exactly that exposure, one undocumented AI encounter at a time.
+        </p>
+      </div>
+
+      <!-- LIVE CASE -->
+      <div class="col-section">
+        <div class="col-label">Live Stress Test</div>
+        <h2>Clifford v. Prenuvo</h2>
+        <p>The anchor case. AI-assisted imaging at the center of the allegations. Full New York exposure after the California damages cap was eliminated in January 2026.</p>
+        <div class="case-box">
+          <div class="case-box-title">Case Index</div>
+          <div class="case-row"><span class="case-key">Index No.</span><span class="case-val">805267/2024 — NY Supreme Court</span></div>
+          <div class="case-row"><span class="case-key">Defendants</span><span class="case-val">8 incl. Prenuvo, Nexray, Sollis Health</span></div>
+          <div class="case-row"><span class="case-key">AI Involvement</span><span class="case-val">AI-assisted imaging read</span></div>
+          <div class="case-row"><span class="case-key">Damages Exposure</span><span class="case-val alert">Full NY — no cap</span></div>
+          <div class="case-row"><span class="case-key">CARAF Status</span><span class="case-val" style="color:#5FD080;">Stress-tested V1.1</span></div>
+        </div>
+      </div>
+
+      <!-- QUOTE -->
+      <div class="quote-block">
+        <blockquote>"The verdict that shapes this field may already be in discovery. The documentation that would have won it — or the <em>absence</em> of documentation that will lose it — already exists in someone's medical record."</blockquote>
+        <cite>— Michael Tekely, AAI · Founder, CARAF · AI & The Oath</cite>
+      </div>
+
+      <!-- WHAT CARAF DELIVERS -->
+      <div class="col-section">
+        <div class="col-label">The Framework</div>
+        <h2>What CARAF delivers</h2>
+        <p><strong style="color:var(--white);">Cognition Gate</strong> — Five-state forensic classification of every AI-assisted encounter. Establishes whether the physician was the decision-maker or a passive conduit.</p>
+        <p><strong style="color:var(--white);">Three-Mode Privilege Taxonomy</strong> — Privilege classification locked at intake via integrity hash. Not reconstructed after litigation begins.</p>
+        <p><strong style="color:var(--white);">CAFRE Reconstruction Engine</strong> — Six-call sequential forensic reconstruction report with SHA-256 hash chain. Built for claims triage and defense preparation, not consultation.</p>
+      </div>
+
+      <!-- LICENSING -->
+      <div class="col-section">
+        <div class="col-label">Licensing Structure</div>
+        <h2>Three entry points</h2>
+        <div class="tiers">
+          <div class="tier">
+            <div class="tier-left">
+              <h4>Tier 1 — Defense Counsel</h4>
+              <p>CAFRE access · per-case litigation support</p>
+            </div>
+            <div class="tier-price">$5K / yr</div>
+          </div>
+          <div class="tier">
+            <div class="tier-left">
+              <h4>Tier 2 — Carrier Pilot</h4>
+              <p>Full framework · claims team + underwriting · 90 days</p>
+            </div>
+            <div class="tier-price">$20K</div>
+          </div>
+          <div class="tier">
+            <div class="tier-left">
+              <h4>Tier 3 — Enterprise License</h4>
+              <p>White-labeled · carrier-branded · full implementation</p>
+            </div>
+            <div class="tier-price">$75K–$150K</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CREDENTIALS -->
+      <div class="col-section" style="grid-column: 1 / -1;">
+        <div class="col-label">The Builder</div>
+        <div class="cred-block">
+          <div style="display:grid; grid-template-columns: auto 1fr; gap: 24px; align-items:start;">
+            <div>
+              <div class="cred-name">Michael Tekely, AAI</div>
+              <div class="cred-title-line">Founder · CARAF Framework · Malpractice Insurance & Clinical Risk Management Academy, LLC</div>
+              <div class="cred-lines">
+                <div class="cred-line">20+ years carrier-side MPL insurance — physician and surgeon specialization, underwriting, claims, coverage gap analysis</div>
+                <div class="cred-line">5.5 years Healthcare Risk Manager — Duke University Health System · M&M reviews · Root cause analysis · Durham Casualty Company captive</div>
+                <div class="cred-line">Developer: CARAF V3.2 · CAFRE V11 · Peer-reviewed by clinical governance physicians · Stress-tested against live litigation</div>
+                <div class="cred-line">Publisher: <em>AI & The Oath</em> — Substack & LinkedIn · The forensic case for clinical AI documentation standards</div>
+              </div>
+            </div>
+            <div style="text-align:right; padding-left:24px; border-left: 1px solid var(--rule);">
+              <div style="font-size:0.65rem; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">Schedule a Conversation</div>
+              <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; color:var(--signal); margin-bottom:6px;">mikepackman135@gmail.com</div>
+              <div style="font-size:0.72rem; color:var(--body); line-height:1.6;">Not a pitch. A conversation about<br>what your book is actually carrying.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-body -->
+
+    <!-- FOOTER -->
+    <div class="page-footer">
+      <div class="footer-contact">
+        <strong>CARAF Framework</strong> &nbsp;·&nbsp;
+        Malpractice Insurance & Clinical Risk Management Academy, LLC &nbsp;·&nbsp;
+        <a href="mailto:mikepackman135@gmail.com">mikepackman135@gmail.com</a> &nbsp;·&nbsp;
+        <span style="color:var(--muted);">Burlington, NC</span>
+      </div>
+      <div class="footer-disclaimer">
+        This brief is provided for informational purposes to insurance professionals, legal counsel, and healthcare administrators. It does not constitute legal advice.
+      </div>
+    </div>
+
+  </div><!-- /page -->
+
+</div><!-- /screen-wrapper -->
+
+</body>
+</html>
