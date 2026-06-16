@@ -1,3 +1,5 @@
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +8,9 @@
 <title>CARAF — Clinical AI Reasoning & Accountability Framework</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-
+ 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   :root {
     --black:    #0A0A0A;
     --off:      #111318;
@@ -21,9 +23,9 @@
     --signal2:  #FF4747;       /* alert red for urgency moments */
     --signal-dim: rgba(232,255,71,0.08);
   }
-
+ 
   html { scroll-behavior: smooth; }
-
+ 
   body {
     background: var(--black);
     color: var(--body);
@@ -32,7 +34,7 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
-
+ 
   /* ── NAV ── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -66,7 +68,7 @@
     transition: opacity 0.15s;
   }
   .nav-cta:hover { opacity: 0.85; }
-
+ 
   /* ── HERO ── */
   .hero {
     min-height: 100vh;
@@ -83,7 +85,7 @@
       radial-gradient(ellipse 40% 40% at 10% 80%, rgba(255,71,71,0.04) 0%, transparent 60%);
     pointer-events: none;
   }
-
+ 
   .hero-eyebrow {
     font-family: 'Syne', sans-serif;
     font-size: 0.72rem;
@@ -100,7 +102,7 @@
     width: 32px; height: 2px;
     background: var(--signal);
   }
-
+ 
   .hero h1 {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
@@ -115,7 +117,7 @@
     font-style: normal;
     color: var(--signal);
   }
-
+ 
   .hero-sub {
     font-size: 1.1rem;
     font-weight: 300;
@@ -124,7 +126,7 @@
     line-height: 1.75;
     margin-bottom: 48px;
   }
-
+ 
   .hero-actions {
     display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
   }
@@ -143,7 +145,7 @@
     transition: opacity 0.15s, transform 0.15s;
   }
   .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-
+ 
   .btn-ghost {
     color: var(--white);
     font-family: 'Inter', sans-serif;
@@ -155,7 +157,7 @@
     transition: border-color 0.15s, color 0.15s;
   }
   .btn-ghost:hover { border-color: var(--white); }
-
+ 
   /* ── TICKER / STAT BAR ── */
   .stat-bar {
     background: var(--surface);
@@ -187,7 +189,7 @@
     text-transform: uppercase;
     color: var(--muted);
   }
-
+ 
   /* ── SECTION SHELL ── */
   section { padding: 100px 48px; }
   .section-eyebrow {
@@ -215,7 +217,7 @@
     max-width: 580px;
     line-height: 1.8;
   }
-
+ 
   /* ── THE PROBLEM ── */
   .problem { background: var(--off); }
   .problem-grid {
@@ -254,7 +256,7 @@
     line-height: 1.7;
     color: var(--body);
   }
-
+ 
   /* ── COSIGNER ── */
   .cosigner { background: var(--black); }
   .cosigner-block {
@@ -282,7 +284,7 @@
     color: var(--muted);
     letter-spacing: 0.06em;
   }
-
+ 
   /* ── WHAT CARAF DOES ── */
   .what { background: var(--off); }
   .pillars {
@@ -332,7 +334,7 @@
     border: 1px solid rgba(232,255,71,0.3);
     padding: 4px 10px;
   }
-
+ 
   /* ── CLIFFORD CASE ── */
   .case { background: var(--black); }
   .case-inner {
@@ -369,7 +371,7 @@
     max-width: 200px;
   }
   .case-detail-val.alert { color: var(--signal2); }
-
+ 
   /* ── AUDIENCES ── */
   .audiences { background: var(--off); }
   .audience-grid {
@@ -408,7 +410,7 @@
     color: var(--signal);
     font-family: 'Syne', sans-serif;
   }
-
+ 
   /* ── CREDENTIALS ── */
   .credentials { background: var(--black); }
   .cred-inner {
@@ -464,7 +466,7 @@
     color: var(--body);
     line-height: 1.65;
   }
-
+ 
   /* ── DOWNLOAD CTA ── */
   .download {
     background: var(--signal);
@@ -528,7 +530,7 @@
     font-size: 0.75rem;
     color: rgba(10,10,10,0.45);
   }
-
+ 
   /* ── FOOTER ── */
   footer {
     background: var(--off);
@@ -563,7 +565,7 @@
     transition: color 0.15s;
   }
   .footer-links a:hover { color: var(--white); }
-
+ 
   /* ── MODAL ── */
   .modal-overlay {
     display: none;
@@ -638,7 +640,7 @@
     color: var(--body);
     margin-bottom: 0;
   }
-
+ 
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     nav { padding: 16px 24px; }
@@ -661,20 +663,20 @@
     footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; gap: 20px; }
     .cosigner-block { padding: 32px 24px; }
   }
-
+ 
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
   }
 </style>
 </head>
 <body>
-
+ 
 <!-- NAV -->
 <nav>
   <div class="nav-logo">CARA<span>F</span></div>
   <a href="#download" class="nav-cta" onclick="openModal(event)">Get the Carrier Brief</a>
 </nav>
-
+ 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-eyebrow">Clinical AI Accountability · Built by a Risk Manager</div>
@@ -687,7 +689,7 @@
     <a href="#problem" class="btn-ghost">See why it matters →</a>
   </div>
 </section>
-
+ 
 <!-- STAT BAR -->
 <div class="stat-bar">
   <div class="stat-item">
@@ -703,12 +705,12 @@
     <div class="stat-label">Existing documentation standards for AI-assisted encounters</div>
   </div>
 </div>
-
+ 
 <!-- THE PROBLEM -->
 <section class="problem" id="problem">
   <div class="section-eyebrow">The Exposure</div>
   <div class="section-title">Clinical AI is deployed. The documentation standard isn't.</div>
-
+ 
   <div class="problem-grid">
     <div>
       <div class="problem-statement">
@@ -734,7 +736,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- THE COSIGNER PROBLEM -->
 <section class="cosigner">
   <div class="section-eyebrow">The Core Forensic Problem</div>
@@ -751,13 +753,13 @@
     <cite>— Michael Tekely, AAI · Founder, CARAF Framework</cite>
   </div>
 </section>
-
+ 
 <!-- WHAT CARAF DOES -->
 <section class="what">
   <div class="section-eyebrow">The Framework</div>
   <div class="section-title">What CARAF closes</div>
   <div class="section-body">Three forensic layers. One defensible standard.</div>
-
+ 
   <div class="pillars">
     <div class="pillar">
       <div class="pillar-num">01</div>
@@ -779,7 +781,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- CLIFFORD CASE -->
 <section class="case">
   <div class="section-eyebrow">Live Stress Test</div>
@@ -787,7 +789,7 @@
   <div class="section-body" style="margin-bottom:0;">
     CARAF was stress-tested against the most consequential AI-adjacent malpractice case currently on docket. This is not a hypothetical. It is a preview.
   </div>
-
+ 
   <div class="case-inner">
     <div>
       <p style="font-size:0.95rem; line-height:1.85; margin-bottom:24px;">
@@ -826,12 +828,12 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- AUDIENCES -->
 <section class="audiences">
   <div class="section-eyebrow">Who This Is For</div>
   <div class="section-title">Three audiences. One exposure.</div>
-
+ 
   <div class="audience-grid">
     <div class="audience-card">
       <div class="audience-icon">⚖️</div>
@@ -853,12 +855,12 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- CREDENTIALS -->
 <section class="credentials">
   <div class="section-eyebrow">The Builder</div>
   <div class="section-title">Built by someone who has stood on both sides</div>
-
+ 
   <div class="cred-inner">
     <div class="cred-bio">
       <div class="cred-name">Michael Tekely, AAI</div>
@@ -894,7 +896,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- DOWNLOAD CTA -->
 <section class="download" id="download">
   <h2>The Carrier Brief is free. The verdict won't be.</h2>
@@ -905,7 +907,7 @@
   </div>
   <div class="download-note">No spam. One document. Unsubscribe anytime.</div>
 </section>
-
+ 
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">CARA<span>F</span></div>
@@ -916,21 +918,22 @@
     <a href="mailto:mikepackman135@gmail.com">Contact</a>
   </div>
 </footer>
-
+ 
 <!-- MODAL -->
 <div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
-
+ 
     <div id="modal-form">
       <h3>Get the Carrier Brief</h3>
       <p>The one-page forensic argument every MPL carrier, defense attorney, and hospital administrator needs before the first AI verdict lands.</p>
       <input type="text" id="modal-name" placeholder="Your name" />
       <input type="email" id="modal-email" placeholder="Work email" />
       <input type="text" id="modal-org" placeholder="Organization / Firm" />
-      <button class="btn-primary" onclick="submitModal()" style="margin-top:8px;">Send Me the Brief →</button>
+      <button class="btn-primary" id="modal-submit-btn" onclick="submitModal()" style="margin-top:8px;">Send Me the Brief →</button>
+      <p id="modal-error" style="display:none; margin-top:12px; margin-bottom:0; font-size:0.78rem; color:#FF4747;">Something went wrong. Please try again or email mikepackman135@gmail.com directly.</p>
     </div>
-
+ 
     <div class="modal-success" id="modal-success">
       <div class="check">✦</div>
       <h4>You're on the list.</h4>
@@ -940,7 +943,7 @@
     </div>
   </div>
 </div>
-
+ 
 <script>
   function openModal(e) {
     if (e) e.preventDefault();
@@ -949,37 +952,71 @@
     if (heroEmail && heroEmail.value) {
       document.getElementById('modal-email').value = heroEmail.value;
     }
+    document.getElementById('modal-form').style.display = 'block';
+    document.getElementById('modal-success').style.display = 'none';
+    document.getElementById('modal-error').style.display = 'none';
+    const btn = document.getElementById('modal-submit-btn');
+    btn.disabled = false;
+    btn.textContent = 'Send Me the Brief →';
     document.body.style.overflow = 'hidden';
   }
-
+ 
   function closeModal() {
     document.getElementById('modal').classList.remove('active');
     document.body.style.overflow = '';
   }
-
+ 
   function closeModalOutside(e) {
     if (e.target === document.getElementById('modal')) closeModal();
   }
-
+ 
   function handleDownload() {
     openModal(null);
   }
-
+ 
   function submitModal() {
     const name = document.getElementById('modal-name').value.trim();
     const email = document.getElementById('modal-email').value.trim();
+    const org = document.getElementById('modal-org').value.trim();
+    const btn = document.getElementById('modal-submit-btn');
+    const errorMsg = document.getElementById('modal-error');
+ 
+    errorMsg.style.display = 'none';
+ 
     if (!email || !email.includes('@')) {
       document.getElementById('modal-email').style.borderColor = '#FF4747';
       return;
     }
-    document.getElementById('modal-form').style.display = 'none';
-    document.getElementById('modal-success').style.display = 'block';
+    document.getElementById('modal-email').style.borderColor = '';
+ 
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+ 
+    fetch('https://formspree.io/f/xjgdzark', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, organization: org, source: 'CARAF Landing Page' })
+    })
+    .then(function(response) {
+      if (response.ok) {
+        document.getElementById('modal-form').style.display = 'none';
+        document.getElementById('modal-success').style.display = 'block';
+      } else {
+        throw new Error('Submission failed');
+      }
+    })
+    .catch(function() {
+      errorMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Send Me the Brief →';
+    });
   }
-
+ 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeModal();
   });
 </script>
-
+ 
 </body>
 </html>
+ 
