@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CARAF — Clinical AI Reasoning & Accountability Framework</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:    #0A0A0A;
+    --off:      #111318;
+    --surface:  #16191F;
+    --border:   #252830;
+    --muted:    #5A5F6E;
+    --body:     #B0B5C3;
+    --white:    #F0F2F7;
+    --signal:   #E8FF47;       /* electric chartreuse — the one bold risk */
+    --signal2:  #FF4747;       /* alert red for urgency moments */
+    --signal-dim: rgba(232,255,71,0.08);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--body);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--white);
+    letter-spacing: 0.08em;
+  }
+  .nav-logo span { color: var(--signal); }
+  .nav-cta {
+    background: var(--signal);
+    color: var(--black);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.15s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 140px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(232,255,71,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 10% 80%, rgba(255,71,71,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--signal);
+    margin-bottom: 28px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 32px; height: 2px;
+    background: var(--signal);
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.6rem, 6vw, 5.2rem);
+    line-height: 1.05;
+    color: var(--white);
+    max-width: 820px;
+    margin-bottom: 32px;
+    letter-spacing: -0.02em;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--signal);
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--body);
+    max-width: 560px;
+    line-height: 1.75;
+    margin-bottom: 48px;
+  }
+
+  .hero-actions {
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--signal);
+    color: var(--black);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 16px 36px;
+    border: none; cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .btn-ghost {
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.88rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--muted);
+    padding-bottom: 2px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-ghost:hover { border-color: var(--white); }
+
+  /* ── TICKER / STAT BAR ── */
+  .stat-bar {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+  }
+  .stat-item {
+    padding: 0 40px;
+    border-right: 1px solid var(--border);
+  }
+  .stat-item:first-child { padding-left: 0; }
+  .stat-item:last-child { border-right: none; }
+  .stat-number {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.2rem;
+    color: var(--signal);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── SECTION SHELL ── */
+  section { padding: 100px 48px; }
+  .section-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--signal);
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 680px;
+    margin-bottom: 20px;
+  }
+  .section-body {
+    font-size: 1rem;
+    color: var(--body);
+    max-width: 580px;
+    line-height: 1.8;
+  }
+
+  /* ── THE PROBLEM ── */
+  .problem { background: var(--off); }
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+    margin-top: 60px;
+  }
+  .problem-statement {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.4;
+    border-left: 3px solid var(--signal2);
+    padding-left: 24px;
+  }
+  .problem-cards { display: flex; flex-direction: column; gap: 16px; }
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px 28px;
+  }
+  .problem-card-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--signal2);
+    margin-bottom: 10px;
+  }
+  .problem-card p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--body);
+  }
+
+  /* ── COSIGNER ── */
+  .cosigner { background: var(--black); }
+  .cosigner-block {
+    margin-top: 48px;
+    background: var(--signal-dim);
+    border: 1px solid rgba(232,255,71,0.2);
+    padding: 48px;
+    max-width: 800px;
+  }
+  .cosigner-block blockquote {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.15rem, 2.5vw, 1.55rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.45;
+    margin-bottom: 24px;
+  }
+  .cosigner-block blockquote em {
+    font-style: normal;
+    color: var(--signal);
+  }
+  .cosigner-block cite {
+    font-size: 0.8rem;
+    font-style: normal;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── WHAT CARAF DOES ── */
+  .what { background: var(--off); }
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+    border: 1px solid var(--border);
+  }
+  .pillar {
+    background: var(--surface);
+    padding: 40px 32px;
+    border-right: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .pillar:last-child { border-right: none; }
+  .pillar:hover { background: #1C2029; }
+  .pillar-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.8rem;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .pillar h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--white);
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+  .pillar p {
+    font-size: 0.88rem;
+    color: var(--body);
+    line-height: 1.75;
+  }
+  .pillar-tag {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--signal);
+    border: 1px solid rgba(232,255,71,0.3);
+    padding: 4px 10px;
+  }
+
+  /* ── CLIFFORD CASE ── */
+  .case { background: var(--black); }
+  .case-inner {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 80px;
+    align-items: center;
+    margin-top: 48px;
+  }
+  .case-detail {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px;
+  }
+  .case-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .case-detail-row:last-child { border-bottom: none; }
+  .case-detail-key {
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    min-width: 130px;
+  }
+  .case-detail-val {
+    color: var(--white);
+    font-weight: 500;
+    text-align: right;
+    max-width: 200px;
+  }
+  .case-detail-val.alert { color: var(--signal2); }
+
+  /* ── AUDIENCES ── */
+  .audiences { background: var(--off); }
+  .audience-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 60px;
+  }
+  .audience-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px 28px;
+    transition: border-color 0.2s;
+  }
+  .audience-card:hover { border-color: rgba(232,255,71,0.4); }
+  .audience-icon {
+    font-size: 1.5rem;
+    margin-bottom: 18px;
+  }
+  .audience-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--white);
+    margin-bottom: 14px;
+  }
+  .audience-card p {
+    font-size: 0.88rem;
+    color: var(--body);
+    line-height: 1.75;
+  }
+  .audience-hook {
+    margin-top: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--signal);
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* ── CREDENTIALS ── */
+  .credentials { background: var(--black); }
+  .cred-inner {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 80px;
+    align-items: start;
+    margin-top: 48px;
+  }
+  .cred-bio {
+    position: sticky;
+    top: 120px;
+  }
+  .cred-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .cred-title {
+    font-size: 0.8rem;
+    color: var(--signal);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .cred-bio p {
+    font-size: 0.9rem;
+    color: var(--body);
+    line-height: 1.8;
+  }
+  .cred-list { display: flex; flex-direction: column; gap: 16px; }
+  .cred-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--signal);
+  }
+  .cred-item-body h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .cred-item-body p {
+    font-size: 0.82rem;
+    color: var(--body);
+    line-height: 1.65;
+  }
+
+  /* ── DOWNLOAD CTA ── */
+  .download {
+    background: var(--signal);
+    padding: 100px 48px;
+    text-align: center;
+  }
+  .download h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 4.5vw, 3.8rem);
+    color: var(--black);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    max-width: 760px;
+    margin: 0 auto 24px;
+  }
+  .download p {
+    font-size: 1.05rem;
+    color: rgba(10,10,10,0.65);
+    max-width: 500px;
+    margin: 0 auto 44px;
+    line-height: 1.7;
+  }
+  .download-form {
+    display: flex;
+    gap: 0;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .download-form input {
+    flex: 1;
+    background: var(--black);
+    border: 2px solid var(--black);
+    border-right: none;
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    padding: 16px 20px;
+    outline: none;
+  }
+  .download-form input::placeholder { color: var(--muted); }
+  .download-form button {
+    background: var(--black);
+    color: var(--signal);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 16px 28px;
+    border: 2px solid var(--black);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+  .download-form button:hover {
+    background: var(--off);
+  }
+  .download-note {
+    margin-top: 16px;
+    font-size: 0.75rem;
+    color: rgba(10,10,10,0.45);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--off);
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--white);
+    letter-spacing: 0.08em;
+  }
+  .footer-logo span { color: var(--signal); }
+  footer p {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .footer-links {
+    display: flex;
+    gap: 24px;
+  }
+  .footer-links a {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .footer-links a:hover { color: var(--white); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 48px;
+    max-width: 480px;
+    width: 90%;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 20px;
+    background: none; border: none;
+    color: var(--muted); font-size: 1.4rem;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .modal-close:hover { color: var(--white); }
+  .modal h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+  .modal p {
+    font-size: 0.88rem;
+    color: var(--body);
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+  .modal input {
+    width: 100%;
+    background: var(--black);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    padding: 14px 16px;
+    outline: none;
+    margin-bottom: 12px;
+    transition: border-color 0.15s;
+  }
+  .modal input:focus { border-color: var(--signal); }
+  .modal input::placeholder { color: var(--muted); }
+  .modal .btn-primary { width: 100%; text-align: center; font-size: 0.85rem; }
+  .modal-success {
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+  }
+  .modal-success .check {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+  }
+  .modal-success h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--white);
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  .modal-success p {
+    font-size: 0.85rem;
+    color: var(--body);
+    margin-bottom: 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .hero { padding: 120px 24px 60px; }
+    section { padding: 70px 24px; }
+    .stat-bar { padding: 28px 24px; grid-template-columns: 1fr; gap: 24px; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--border); padding: 0 0 24px; }
+    .stat-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .problem-grid { grid-template-columns: 1fr; gap: 40px; }
+    .pillars { grid-template-columns: 1fr; }
+    .pillar { border-right: none; border-bottom: 1px solid var(--border); }
+    .pillar:last-child { border-bottom: none; }
+    .case-inner { grid-template-columns: 1fr; gap: 40px; }
+    .audience-grid { grid-template-columns: 1fr; }
+    .cred-inner { grid-template-columns: 1fr; gap: 40px; }
+    .cred-bio { position: static; }
+    .download { padding: 70px 24px; }
+    .download-form { flex-direction: column; }
+    .download-form input { border-right: 2px solid var(--black); border-bottom: none; }
+    footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; gap: 20px; }
+    .cosigner-block { padding: 32px 24px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">CARA<span>F</span></div>
+  <a href="#download" class="nav-cta" onclick="openModal(event)">Get the Carrier Brief</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Clinical AI Accountability · Built by a Risk Manager</div>
+  <h1>The AI verdict is coming.<br><em>Is your defense ready?</em></h1>
+  <p class="hero-sub">
+    CARAF is the first forensic framework built specifically for clinical AI liability — giving MPL carriers, defense counsel, and hospital administrators the documentation standard that doesn't exist yet.
+  </p>
+  <div class="hero-actions">
+    <a href="#download" class="btn-primary" onclick="openModal(event)">Download the Carrier Brief</a>
+    <a href="#problem" class="btn-ghost">See why it matters →</a>
+  </div>
+</section>
+
+<!-- STAT BAR -->
+<div class="stat-bar">
+  <div class="stat-item">
+    <div class="stat-number">8</div>
+    <div class="stat-label">Defendants — Clifford v. Prenuvo, NY 2024</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">4</div>
+    <div class="stat-label">Policy types with unpriced AI exposure gaps</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">0</div>
+    <div class="stat-label">Existing documentation standards for AI-assisted encounters</div>
+  </div>
+</div>
+
+<!-- THE PROBLEM -->
+<section class="problem" id="problem">
+  <div class="section-eyebrow">The Exposure</div>
+  <div class="section-title">Clinical AI is deployed. The documentation standard isn't.</div>
+
+  <div class="problem-grid">
+    <div>
+      <div class="problem-statement">
+        "Doctor, can you show me where you documented that you reviewed the AI's output and applied your own clinical judgment before acting?"
+      </div>
+      <p style="margin-top:28px; font-size:0.9rem; line-height:1.8;">
+        That question is coming. In deposition. In front of a jury. The plaintiff's bar has already noticed the gap. The medical record can prove the AI spoke. It cannot prove whether the physician engaged. That silence belongs to the plaintiff.
+      </p>
+    </div>
+    <div class="problem-cards">
+      <div class="problem-card">
+        <div class="problem-card-label">MPL Carriers</div>
+        <p>Renewing physician accounts where clinical AI is actively in use — with no mechanism to assess documentation quality, governance posture, or defensibility.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-label">Defense Counsel</div>
+        <p>The first AI-assisted malpractice case without a forensic reconstruction framework is a case you are not prepared for. The reconstruction has to happen before discovery, not during it.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-label">Hospital Administrators</div>
+        <p>Every undocumented AI-assisted encounter is institutional exposure. Governance frameworks that were aspirational last year are legal necessities this year.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE COSIGNER PROBLEM -->
+<section class="cosigner">
+  <div class="section-eyebrow">The Core Forensic Problem</div>
+  <div class="section-title">The Cosigner Problem</div>
+  <div class="section-body">
+    Audit logs, EHR metadata, and third-party API records can establish that an AI tool generated output during a patient encounter. What they cannot establish is whether the physician actually engaged with it.
+  </div>
+  <div class="cosigner-block">
+    <blockquote>
+      "The medical record can prove the AI spoke.<br>
+      It cannot prove the clinician <em>listened</em>,<br>
+      reasoned, or decided."
+    </blockquote>
+    <cite>— Michael Tekely, AAI · Founder, CARAF Framework</cite>
+  </div>
+</section>
+
+<!-- WHAT CARAF DOES -->
+<section class="what">
+  <div class="section-eyebrow">The Framework</div>
+  <div class="section-title">What CARAF closes</div>
+  <div class="section-body">Three forensic layers. One defensible standard.</div>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="pillar-num">01</div>
+      <h3>Cognition Gate</h3>
+      <p>Five-state classification of every AI-assisted clinical encounter: Passed, Engagement Indicated, Bypassed, Exposed, or Absorption Fingerprint. Establishes whether the physician was the decision-maker.</p>
+      <span class="pillar-tag">Forensic Classification</span>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">02</div>
+      <h3>Three-Mode Privilege Taxonomy</h3>
+      <p>Privilege classification locked into the integrity hash at intake — not reconstructed after litigation begins. Mode A: Counsel-Directed. Mode B: Patient Safety/Quality. Mode C: Ordinary-Course Business Record.</p>
+      <span class="pillar-tag">Privilege Architecture</span>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">03</div>
+      <h3>CAFRE Reconstruction Engine</h3>
+      <p>Six-call sequential forensic reconstruction report with SHA-256 content hash chain commits. Source-document anchoring with unsupported-assertion flagging. Built for litigation, not consultation.</p>
+      <span class="pillar-tag">Litigation Support</span>
+    </div>
+  </div>
+</section>
+
+<!-- CLIFFORD CASE -->
+<section class="case">
+  <div class="section-eyebrow">Live Stress Test</div>
+  <div class="section-title">Clifford v. Prenuvo — The anchor case</div>
+  <div class="section-body" style="margin-bottom:0;">
+    CARAF was stress-tested against the most consequential AI-adjacent malpractice case currently on docket. This is not a hypothetical. It is a preview.
+  </div>
+
+  <div class="case-inner">
+    <div>
+      <p style="font-size:0.95rem; line-height:1.85; margin-bottom:24px;">
+        Eight defendants. AI-assisted imaging at the center of the allegations. Full New York exposure after the California damages cap was eliminated in January 2026. The discovery record that wins or loses this case already exists — or doesn't — in the medical record as it was documented at the time of care.
+      </p>
+      <p style="font-size:0.95rem; line-height:1.85;">
+        CARAF's forensic peer review — conducted with Dr. John Ferguson as clinical governance reviewer — produced the first structured reconstruction of an AI-assisted imaging encounter using the Cognition Gate specification and three-mode privilege taxonomy. The methodology is reproducible. The standard is licensable.
+      </p>
+    </div>
+    <div class="case-detail">
+      <div style="font-family:'Syne',sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin-bottom:20px;">Case Index</div>
+      <div class="case-detail-row">
+        <span class="case-detail-key">Case</span>
+        <span class="case-detail-val">Clifford v. Prenuvo</span>
+      </div>
+      <div class="case-detail-row">
+        <span class="case-detail-key">Index No.</span>
+        <span class="case-detail-val">805267/2024</span>
+      </div>
+      <div class="case-detail-row">
+        <span class="case-detail-key">Court</span>
+        <span class="case-detail-val">NY Supreme Court</span>
+      </div>
+      <div class="case-detail-row">
+        <span class="case-detail-key">Defendants</span>
+        <span class="case-detail-val">8 (incl. Prenuvo, Nexray, Sollis Health)</span>
+      </div>
+      <div class="case-detail-row">
+        <span class="case-detail-key">AI Involvement</span>
+        <span class="case-detail-val">AI-assisted imaging read</span>
+      </div>
+      <div class="case-detail-row">
+        <span class="case-detail-key">Exposure</span>
+        <span class="case-detail-val alert">Full NY — no damages cap</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUDIENCES -->
+<section class="audiences">
+  <div class="section-eyebrow">Who This Is For</div>
+  <div class="section-title">Three audiences. One exposure.</div>
+
+  <div class="audience-grid">
+    <div class="audience-card">
+      <div class="audience-icon">⚖️</div>
+      <h3>MPL Carriers & Underwriters</h3>
+      <p>You are pricing AI exposure on every physician account you renew. You don't have a forensic standard to evaluate it. CARAF gives you one — before a verdict prices it for you.</p>
+      <div class="audience-hook">License the framework →</div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">🏛️</div>
+      <h3>Defense Counsel</h3>
+      <p>The AI-assisted malpractice case is coming to your desk. CAFRE provides forensic reconstruction methodology and litigation support before discovery forces a reactive reconstruction.</p>
+      <div class="audience-hook">Litigation support retainer →</div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">🏥</div>
+      <h3>Hospital & Practice Administrators</h3>
+      <p>Every undocumented AI encounter is institutional liability. CARAF closes the governance gap between deployment and defensibility — before a plaintiff's attorney does it for you.</p>
+      <div class="audience-hook">Governance framework →</div>
+    </div>
+  </div>
+</section>
+
+<!-- CREDENTIALS -->
+<section class="credentials">
+  <div class="section-eyebrow">The Builder</div>
+  <div class="section-title">Built by someone who has stood on both sides</div>
+
+  <div class="cred-inner">
+    <div class="cred-bio">
+      <div class="cred-name">Michael Tekely, AAI</div>
+      <div class="cred-title">Founder · CARAF Framework</div>
+      <p>No academic. No vendor. No technologist. A carrier-side MPL insurance professional and Duke University Health System clinical risk manager who spent 25 years watching what destroys physicians — and 5 years inside the institution learning how to prevent it.</p>
+      <p style="margin-top:16px;">CARAF was built because no one else was building it. And because the gap was going to become a verdict.</p>
+    </div>
+    <div class="cred-list">
+      <div class="cred-item">
+        <div class="cred-item-body">
+          <h4>20+ Years · Carrier-Side MPL Insurance</h4>
+          <p>Physician and surgeon liability specialization. Underwriting, claims, coverage analysis, and the policy gaps that carriers don't advertise.</p>
+        </div>
+      </div>
+      <div class="cred-item">
+        <div class="cred-item-body">
+          <h4>5.5 Years · Duke University Health System</h4>
+          <p>Healthcare Risk Manager. M&M reviews, root cause analysis, ED liaison, Durham Casualty Company captive. The institutional side of what goes wrong.</p>
+        </div>
+      </div>
+      <div class="cred-item">
+        <div class="cred-item-body">
+          <h4>CARAF V3.2 · CAFRE V11</h4>
+          <p>Clinical AI Reasoning and Accountability Framework. Clinical AI Forensic Reconstruction Engine. Peer-reviewed by clinical governance physicians. Stress-tested against live litigation.</p>
+        </div>
+      </div>
+      <div class="cred-item">
+        <div class="cred-item-body">
+          <h4>AI & The Oath · Substack & LinkedIn</h4>
+          <p>Publishing the forensic case for clinical AI documentation standards to the administrators, carriers, and defense counsel who need to act before the verdict lands.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD CTA -->
+<section class="download" id="download">
+  <h2>The Carrier Brief is free. The verdict won't be.</h2>
+  <p>One document. The exposure, the framework, and the conversation every MPL carrier needs to have before Q4.</p>
+  <div class="download-form">
+    <input type="email" id="hero-email" placeholder="your@email.com" />
+    <button onclick="handleDownload()">Send It →</button>
+  </div>
+  <div class="download-note">No spam. One document. Unsubscribe anytime.</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">CARA<span>F</span></div>
+  <p>© 2026 Malpractice Insurance and Clinical Risk Management Academy, LLC</p>
+  <div class="footer-links">
+    <a href="https://substack.com/@aiandtheoath" target="_blank">Substack</a>
+    <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+    <a href="mailto:mikepackman135@gmail.com">Contact</a>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+
+    <div id="modal-form">
+      <h3>Get the Carrier Brief</h3>
+      <p>The one-page forensic argument every MPL carrier, defense attorney, and hospital administrator needs before the first AI verdict lands.</p>
+      <input type="text" id="modal-name" placeholder="Your name" />
+      <input type="email" id="modal-email" placeholder="Work email" />
+      <input type="text" id="modal-org" placeholder="Organization / Firm" />
+      <button class="btn-primary" onclick="submitModal()" style="margin-top:8px;">Send Me the Brief →</button>
+    </div>
+
+    <div class="modal-success" id="modal-success">
+      <div class="check">✦</div>
+      <h4>You're on the list.</h4>
+      <p>Your Carrier Brief is ready. Open it now, then save as PDF using Ctrl+P / Cmd+P.</p>
+      <a href="caraf-carrier-brief.html" target="_blank" class="btn-primary" style="display:inline-block; margin-top:20px; text-align:center;">Open the Carrier Brief →</a>
+      <p style="margin-top:16px; font-size:0.75rem; color:var(--muted);">Questions? Email <strong style="color:var(--white);">mikepackman135@gmail.com</strong></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('modal').classList.add('active');
+    const heroEmail = document.getElementById('hero-email');
+    if (heroEmail && heroEmail.value) {
+      document.getElementById('modal-email').value = heroEmail.value;
+    }
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+
+  function handleDownload() {
+    openModal(null);
+  }
+
+  function submitModal() {
+    const name = document.getElementById('modal-name').value.trim();
+    const email = document.getElementById('modal-email').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('modal-email').style.borderColor = '#FF4747';
+      return;
+    }
+    document.getElementById('modal-form').style.display = 'none';
+    document.getElementById('modal-success').style.display = 'block';
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+  });
+</script>
+
+</body>
+</html>
